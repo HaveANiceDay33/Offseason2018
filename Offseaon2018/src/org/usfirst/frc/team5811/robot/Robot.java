@@ -207,7 +207,7 @@ public class Robot extends IterativeRobot {
 		autoStarted = false;
 
 		   try{
-			    FileInputStream fstream = new FileInputStream("/home/lvuser/RightCorner.txt");
+			          FileInputStream fstream = new FileInputStream("/home/lvuser/autos/auto.txt");
 			          DataInputStream in = new DataInputStream(fstream);
 			          BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			          String strLine;
@@ -237,7 +237,7 @@ public class Robot extends IterativeRobot {
 			          
 			          
 			   }catch (Exception e){
-			     System.err.println("Error: " + e.getMessage());
+			     System.err.println("This is the Error: " + e.getMessage().toString());
 			   }
 		
 
