@@ -22,9 +22,9 @@ public class runProfile extends CommandGroup {
     		addSequential(new FullStop(35));
     		addSequential(new FullAutoReset());
     		System.out.println("I am on step: "+steps);
-//    		if(((ReaderFile) Robot.data.get(steps)).type.equals("END")) {
-//    			addSequential(new FullStop(1));
-//    		}
+    		if(((ReaderFile) Robot.data.get(steps)).type.equals("END")) {
+   				addSequential(new FullStop(1));
+   			}
     	}
     	addSequential(new FullStop(1));
     }
