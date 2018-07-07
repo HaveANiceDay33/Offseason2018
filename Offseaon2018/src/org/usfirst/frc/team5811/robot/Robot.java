@@ -22,6 +22,9 @@ import org.usfirst.frc.team5811.robot.commands.OutsideSwitchLeftAutoExtended;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchRightAuto;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchrightAutoExtended;
 import org.usfirst.frc.team5811.robot.commands.runProfile;
+import org.usfirst.frc.team5811.robot.commands.DrivetrainExperiment;
+import org.usfirst.frc.team5811.robot.commands.VInterceptDetermination;
+
 import org.usfirst.frc.team5811.robot.subsystems.Arms;
 import org.usfirst.frc.team5811.robot.subsystems.Camera;
 import org.usfirst.frc.team5811.robot.subsystems.DriveTrain;
@@ -51,7 +54,6 @@ public class Robot extends IterativeRobot {
 	public static OI oi;
 	public static Camera camera;
 	public static Arms arms;
-	// hi
 	double autoSelecter;
 
 	double autoNumber;
@@ -80,7 +82,7 @@ public class Robot extends IterativeRobot {
 		intake = new Intake();
 		pivot = new Pivot();
 		ramp = new Ramp();
-		camera = new Camera();
+		//camera = new Camera(); //removed for testing without camera pole attached
 		arms = new Arms();
 
 		oi = new OI();
@@ -103,6 +105,7 @@ public class Robot extends IterativeRobot {
 		// chooser.addObject("Go no go test DO NOT USE", new GoNoGoTest());
 		// System.out.print("I'm not slow?");
 
+		SmartDashboard.putNumber("AUTO SELECTION USE THIS ONE: ", 0.0); //This had been removed and therefore we couldn't select auto
 		SmartDashboard.putNumber("Left Encoder: ", encoders.getLeftVal()/108.6497744841);
 		SmartDashboard.putNumber("Right Encoder: ", encoders.getRightVal()/108.6497744841);
 		SmartDashboard.putNumber("NavX Angle: ", navx.grabValues());
@@ -380,12 +383,14 @@ public class Robot extends IterativeRobot {
 //			autonomousCommand.start();
 
 //		}
+		   //autonomousCommand = new DrivetrainExperiment();
+		   autonomousCommand = new VInterceptDetermination();
 		   autonomousCommand.start();
 	}
 	
 	@Override
 	public void autonomousPeriodic() {
-    //	Scheduler.getInstance().run();//why was this commented out?
+    	Scheduler.getInstance().run();//why was this commented out?
 //		counterAuto++;
 //
 //		if(autoChosen == false && counterAuto < 500) {
@@ -531,6 +536,9 @@ public class Robot extends IterativeRobot {
 //			System.out.println("PIVOT DISABLED");
 //		}
 
+		
+		
+		
 	}
 
 	@Override
@@ -550,12 +558,12 @@ public class Robot extends IterativeRobot {
 
 	@Override 
 	public void robotPeriodic() { //Is this for real?
-		Scheduler.getInstance().run();
+		//Scheduler.getInstance().run();
 	}
 	
 	@Override
 	public void teleopPeriodic() {
-//		Scheduler.getInstance().run();
+		Scheduler.getInstance().run();
 		// compressor.setClosedLoopControl(true);
 		RobotMap.PDP.clearStickyFaults();
 		SmartDashboard.putNumber("Left Encoder: ", encoders.getLeftVal()/108.6497744841);

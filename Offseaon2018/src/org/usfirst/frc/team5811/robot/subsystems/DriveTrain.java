@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
@@ -59,10 +60,18 @@ public class DriveTrain extends Subsystem {
 	double visionTurnMult = 0.4;
 	double turnMax = 0.9;
 	
-	public double inchToPulse = 108.6497744841; //2048 pulses for every six pi (one inch is 108... pulses)
+	public final double inchToPulse = 108.6497744841; //2048 pulses for every six pi (one inch is 108... pulses)
+	
+	public double batteryVoltage;
 	
 	public double currentThreshold = 20;
 	public int intSpikeWait = 50;
+	
+	//New motion profiling stuff
+	public final double wheelDiameter = 6.0;
+	public final double wheelRadius = wheelDiameter/2;
+	public final double trackWidth = 26.0; //Not in use yet
+	
 
 	public void fullReset() { // reseting angle storing variables
 		previousAngle = 0;
@@ -72,6 +81,20 @@ public class DriveTrain extends Subsystem {
 		rateOfChange = 0;
 		
 	}
+	
+	public double reportTimeStamp() {
+		return Timer.getFPGATimestamp();
+	}
+	
+	//Send an amount of voltage to the motors based on the PDP voltage reading. Doesn't account for voltage sag...
+	public void voltageDrive(double leftVoltage, double rightVoltage) { 
+		batteryVoltage = this.monitorBatteryVoltage();
+		leftMotor1.set(leftVoltage/batteryVoltage);
+		leftMotor2.set(leftVoltage/batteryVoltage);
+		rightMotor1.set(-1*rightVoltage/batteryVoltage);
+		rightMotor2.set(-1*rightVoltage/batteryVoltage);
+	}
+	
 	
 	public void motorReset() {
 		leftMotor1.set(0);
@@ -384,6 +407,9 @@ public class DriveTrain extends Subsystem {
 	}
 	public double monitorCurrentDriveLeft() {
 		return pdp.getCurrent(12);
+	}
+	public double monitorBatteryVoltage() {
+		return pdp.getVoltage();
 	}
 
 }
