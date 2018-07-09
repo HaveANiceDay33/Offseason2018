@@ -15,12 +15,14 @@ import org.usfirst.frc.team5811.robot.commands.AutoLeftSwitchExchange;
 import org.usfirst.frc.team5811.robot.commands.AutoRight;
 import org.usfirst.frc.team5811.robot.commands.AutoRightSwitchExchange;
 import org.usfirst.frc.team5811.robot.commands.CompOn;
+import org.usfirst.frc.team5811.robot.commands.ComparisonAuto;
 import org.usfirst.frc.team5811.robot.commands.GoNoGoTest;
 import org.usfirst.frc.team5811.robot.commands.LineCrossAuto;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchLeftAuto;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchLeftAutoExtended;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchRightAuto;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchrightAutoExtended;
+import org.usfirst.frc.team5811.robot.commands.RunBasicTrapezoidalProfile;
 import org.usfirst.frc.team5811.robot.commands.runProfile;
 import org.usfirst.frc.team5811.robot.commands.DrivetrainExperiment;
 import org.usfirst.frc.team5811.robot.commands.VInterceptDetermination;
@@ -384,7 +386,10 @@ public class Robot extends IterativeRobot {
 
 //		}
 		   //autonomousCommand = new DrivetrainExperiment();
-		   autonomousCommand = new VInterceptDetermination();
+		   //autonomousCommand = new VInterceptDetermination();
+		   autonomousCommand = new RunBasicTrapezoidalProfile(); // Motion Profiles! Wooo! //Lot of work to do on code structure
+		   //autonomousCommand = new ComparisonAuto(); //this was lame
+		   
 		   autonomousCommand.start();
 	}
 	

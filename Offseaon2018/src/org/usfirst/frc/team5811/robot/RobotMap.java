@@ -48,8 +48,8 @@ public class RobotMap {
 	public static UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 	public static UsbCamera camera2 = CameraServer.getInstance().startAutomaticCapture();
 
-	public static Encoder driveEncL = new Encoder(0, 1, true, Encoder.EncodingType.k4X);
-	public static Encoder driveEncR = new Encoder(2, 3, false, Encoder.EncodingType.k4X); // false because the booleans
+	public static Encoder driveEncL = new Encoder(0, 1, false, Encoder.EncodingType.k4X);  //I reversed these - Peter (Offseason)
+	public static Encoder driveEncR = new Encoder(2, 3, true, Encoder.EncodingType.k4X); // false because the booleans
 																							// have to be reverse
 																							// direction
 	public static Ultrasonic ultra = new Ultrasonic(di2, di1);
