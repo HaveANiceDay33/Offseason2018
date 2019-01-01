@@ -95,6 +95,13 @@ public class DriveTrain extends Subsystem {
 		rightMotor2.set(-1*rightVoltage/batteryVoltage);
 	}
 	
+	public double motorVoltageRead(boolean left) {
+		if(left) {
+			return leftMotor1.get()*this.monitorBatteryVoltage();
+		}else {
+			return rightMotor1.get()*this.monitorBatteryVoltage();
+		}
+	}
 	
 	public void motorReset() {
 		leftMotor1.set(0);
@@ -209,6 +216,7 @@ public class DriveTrain extends Subsystem {
 		rightMotor1.set(-speedDir);
 		rightMotor2.set(-speedDir);
 	}
+	
 	public void autoDriveFlat(double direction) {
 		// kp += .1;
 		double motorCorrect = errorCorrect(currentAngle);
@@ -411,5 +419,38 @@ public class DriveTrain extends Subsystem {
 	public double monitorBatteryVoltage() {
 		return pdp.getVoltage();
 	}
+	
+//	Physical robot properties should be stored in a constants file in real life, and potentially calibrated by experiment, using this for now
+	double mass = 40.0; // kg
+	double moi = 100.0; // kg * m^2   //this is a number 254 code had, I figure it's close-ish. Definitely need tuning
+	double wheelRadiusMeters = 0.0508; // m 
+	double wheelBaseWidth = 0.8128; // m   //this is the effective wheel base width empirically 4/3 that of the physical wheel base width (24in --> 32in)
+	double vIntercept = 0.25; //0.67 // V
+	double R = 0.09160305; // ohms
+	double kv = 46.51333;   // rad/s per V 
+	double kt = 0.0183969466;   // N*m per A
+	double g = 10.71; // gear reduction (g:1)
+	int nMotors = 2; //number of motors in a gearbox
+	
+	public double voltsForMotion(double velocity, double force) {
+		return force*wheelRadiusMeters*R/(g*kt)/nMotors  //Torque (I*R) term
+			   + velocity/wheelRadiusMeters*g/kv         //Speed  (V*kv) term
+			   + vIntercept;							 //Friction term
+	}
+	
+	double k1 = 2/wheelBaseWidth;
+	double k2 = wheelBaseWidth*mass/(2*moi);
+	public double solveChassisDynamics(double rPath, double vel, double acc, boolean left) { // this should return a two quantity object (drivebaseState) or something like that, but again, for now... no
+		if(left) {
+			return voltsForMotion(
+					vel*(k1*rPath-1)/(k1*rPath),
+					(mass*acc*(k2*rPath - 1))/(2*k2*rPath));
+		}else{
+			return voltsForMotion(
+					vel*(k1*rPath+1)/(k1*rPath),
+					(mass*acc*(k2*rPath + 1))/(2*k2*rPath));
+		}
+	}
+	
 
 }

@@ -30,6 +30,7 @@ public class VInterceptDetermination extends Command {
     	startTimestamp = Timer.getFPGATimestamp();
     	previousTimestamp = startTimestamp;
     	Robot.encoders.reset();
+    	System.out.println("V intercept determination initialized");
     }
 
     // Called repeatedly when this Command is scheduled to run

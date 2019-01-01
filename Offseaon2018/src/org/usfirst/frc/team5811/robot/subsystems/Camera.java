@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 
 public class Camera extends Subsystem {
-	UsbCamera camera = RobotMap.camera;
-	UsbCamera camera2 = RobotMap.camera2;
+//	UsbCamera camera = RobotMap.camera;
+//	UsbCamera camera2 = RobotMap.camera2;
 	// Put methods for controlling this subsystem
 	// here. Call these from Commands.
 
@@ -22,7 +22,7 @@ public class Camera extends Subsystem {
 	}
 
 	public void camOn() {
-		camera = CameraServer.getInstance().startAutomaticCapture();
-		camera2 = CameraServer.getInstance().startAutomaticCapture();
+//		camera = CameraServer.getInstance().startAutomaticCapture();
+//		camera2 = CameraServer.getInstance().startAutomaticCapture();
 	}
 }

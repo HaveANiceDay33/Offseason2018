@@ -1,5 +1,6 @@
 
 package org.usfirst.frc.team5811.robot;
+import org.usfirst.frc.team5811.robot.commands.ArcProfile;
 import org.usfirst.frc.team5811.robot.commands.AutoDriveFlat;
 
 import java.io.BufferedReader;
@@ -18,6 +19,8 @@ import org.usfirst.frc.team5811.robot.commands.CompOn;
 import org.usfirst.frc.team5811.robot.commands.ComparisonAuto;
 import org.usfirst.frc.team5811.robot.commands.GoNoGoTest;
 import org.usfirst.frc.team5811.robot.commands.LineCrossAuto;
+import org.usfirst.frc.team5811.robot.commands.LocalizationAuto;
+import org.usfirst.frc.team5811.robot.commands.LocalizationTest;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchLeftAuto;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchLeftAutoExtended;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchRightAuto;
@@ -26,7 +29,7 @@ import org.usfirst.frc.team5811.robot.commands.RunBasicTrapezoidalProfile;
 import org.usfirst.frc.team5811.robot.commands.runProfile;
 import org.usfirst.frc.team5811.robot.commands.DrivetrainExperiment;
 import org.usfirst.frc.team5811.robot.commands.VInterceptDetermination;
-
+import org.usfirst.frc.team5811.robot.commands.idiot;
 import org.usfirst.frc.team5811.robot.subsystems.Arms;
 import org.usfirst.frc.team5811.robot.subsystems.Camera;
 import org.usfirst.frc.team5811.robot.subsystems.DriveTrain;
@@ -39,6 +42,7 @@ import org.usfirst.frc.team5811.robot.subsystems.Ramp;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -54,7 +58,7 @@ public class Robot extends IterativeRobot {
 	public static Pivot pivot;
 	public static Ramp ramp;
 	public static OI oi;
-	public static Camera camera;
+	//public static Camera camera;
 	public static Arms arms;
 	double autoSelecter;
 
@@ -64,7 +68,13 @@ public class Robot extends IterativeRobot {
 
 	char firstLetter;
 	char secondLetter;
-
+	
+	double left, leftPrev, right, rightPrev, driveAngle, driveAnglePrev;
+	double leftVel, rightVel, angVel;
+	double leftAcc, rightAcc, angAcc;
+	double startTimestamp, timestamp, timestampPrev, timestampTwoPrev, dt;
+	double leftVelPrev, rightVelPrev, angVelPrev, dt2;
+	
 	Command autonomousCommand;
 	
 	double counterAuto;
@@ -198,7 +208,7 @@ public class Robot extends IterativeRobot {
 //github.com/FRC-Team5811/2018-Robot-Code
 	@Override
 	public void autonomousInit() {
-		int wayCount = 0;
+/*		int wayCount = 0;
 		driveSUB.fullReset(); // reseting angle storing variables
 		driveSUB.motorReset();
 		encoders.reset();
@@ -245,7 +255,7 @@ public class Robot extends IterativeRobot {
 			     System.err.println("This is the Error: " + e.getMessage().toString());
 			   }
 		
-
+*/
 	
 //github.com/FRC-Team5811/2018-Robot-Code
 		//
@@ -387,15 +397,21 @@ public class Robot extends IterativeRobot {
 //		}
 		   //autonomousCommand = new DrivetrainExperiment();
 		   //autonomousCommand = new VInterceptDetermination();
-		   autonomousCommand = new RunBasicTrapezoidalProfile(); // Motion Profiles! Wooo! //Lot of work to do on code structure
-		   //autonomousCommand = new ComparisonAuto(); //this was lame
-		   
+		   //autonomousCommand = new RunBasicTrapezoidalProfile(); // Motion Profiles! Wooo! //Lot of work to do on code structure
+		   //autonomousCommand = new LocalizationTest(); 
+		   //autonomousCommand = new LocalizationTest();
+		   autonomousCommand = new ArcProfile();
+//		   System.out.println("command selected");
 		   autonomousCommand.start();
+//		   System.out.println("command started");
 	}
 	
 	@Override
 	public void autonomousPeriodic() {
+//		System.out.println("autoPeriodic");
     	Scheduler.getInstance().run();//why was this commented out?
+
+    	
 //		counterAuto++;
 //
 //		if(autoChosen == false && counterAuto < 500) {
@@ -556,6 +572,15 @@ public class Robot extends IterativeRobot {
 		
 		driveSUB.motorReset();
 		
+		left = right = driveAngle = 0.0;
+		leftPrev = rightPrev = driveAnglePrev = 0.0;
+		leftVel = rightVel = angVel = 0.0;
+		leftVelPrev = rightVelPrev = angVelPrev = 0.0;
+		leftAcc = rightAcc = angAcc = 0.0;
+		dt = 0.0;
+		dt2 = 0.0;
+		startTimestamp = timestamp = timestampPrev = timestampTwoPrev = Timer.getFPGATimestamp();
+		
 		// System.out.println("Navx: " + navx.grabValues());
 		if (autonomousCommand != null)
 			autonomousCommand.cancel();
@@ -586,6 +611,39 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Intake Left Current: ", Robot.driveSUB.monitorCurrentIntakeLeft());
 		
 		new CompOn();//
+		
+		//System.out.println(Robot.encoders.getLeftVal()/108.6497744841);
+		timestamp = Timer.getFPGATimestamp();
+		left = Robot.encoders.getLeftVal()/108.6497744841 * 0.0254;  //Converting to metric units for use with physics model
+		right = Robot.encoders.getRightVal()/108.6497744841 * 0.0254;
+		driveAngle = -1*Robot.navx.grabValues()*Math.PI/180;
+		
+		dt = timestamp - timestampPrev;
+		dt2 = timestamp - timestampTwoPrev;
+		leftVel = (left - leftPrev) / dt;
+		rightVel = (right - rightPrev) / dt;
+		angVel = (driveAngle - driveAnglePrev) / dt;
+		leftAcc = (leftVel-leftVelPrev)/dt;
+		rightAcc = (rightVel-rightVelPrev)/dt;
+		angAcc = (angVel-angVelPrev)/dt;
+		
+//		System.out.println("dt: " + dt);
+//		System.out.println("Left Velocity: " + leftVel);
+//		System.out.println("Right Velocity: " + rightVel);
+//		System.out.println("Angular Velocity: " + angVel);
+//		System.out.println("Calculated Angular Velocity: " + (rightVel- leftVel)*2/24.0);
+		
+		System.out.println(leftVel + " " + rightVel + " " + angVel + " " + (rightVel-leftVel)/(32.0*0.0254) + " " + leftAcc + " " + rightAcc + " " + angAcc + " " + (rightAcc - leftAcc)/(32.0*0.0254) + " " + Robot.driveSUB.motorVoltageRead(true) + " " + Robot.driveSUB.motorVoltageRead(false));
+		
+		leftPrev = left;
+		rightPrev = right;
+		driveAnglePrev = driveAngle;
+		leftVelPrev = leftVel;
+		rightVelPrev = rightVel;
+		angVelPrev = angVel;
+		timestampTwoPrev = timestampPrev;
+		timestampPrev = timestamp;
+		
 		
 		//System.out.println(RobotMap.ultra.getRangeInches());
 		
