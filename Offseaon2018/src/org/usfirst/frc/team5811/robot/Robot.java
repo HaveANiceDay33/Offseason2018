@@ -208,6 +208,7 @@ public class Robot extends IterativeRobot {
 //github.com/FRC-Team5811/2018-Robot-Code
 	@Override
 	public void autonomousInit() {
+		
 /*		int wayCount = 0;
 		driveSUB.fullReset(); // reseting angle storing variables
 		driveSUB.motorReset();
@@ -395,6 +396,7 @@ public class Robot extends IterativeRobot {
 //			autonomousCommand.start();
 
 //		}
+		
 		   //autonomousCommand = new DrivetrainExperiment();
 		   //autonomousCommand = new VInterceptDetermination();
 		   //autonomousCommand = new RunBasicTrapezoidalProfile(); // Motion Profiles! Wooo! //Lot of work to do on code structure

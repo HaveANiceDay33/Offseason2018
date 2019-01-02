@@ -422,10 +422,10 @@ public class DriveTrain extends Subsystem {
 	
 //	Physical robot properties should be stored in a constants file in real life, and potentially calibrated by experiment, using this for now
 	double mass = 40.0; // kg
-	double moi = 100.0; // kg * m^2   //this is a number 254 code had, I figure it's close-ish. Definitely need tuning
-	double wheelRadiusMeters = 0.0508; // m 
+	double moi = 10.0; // kg * m^2   //this is a number 254 code had, I figure it's close-ish. Definitely need tuning. Trying to account for scrub with this, not so great
+	double wheelRadiusMeters = 0.0762; // m 
 	double wheelBaseWidth = 0.8128; // m   //this is the effective wheel base width empirically 4/3 that of the physical wheel base width (24in --> 32in)
-	double vIntercept = 0.25; //0.67 // V
+	double vIntercept = 0.67; //0.67 // V
 	double R = 0.09160305; // ohms
 	double kv = 46.51333;   // rad/s per V 
 	double kt = 0.0183969466;   // N*m per A
@@ -440,15 +440,34 @@ public class DriveTrain extends Subsystem {
 	
 	double k1 = 2/wheelBaseWidth;
 	double k2 = wheelBaseWidth*mass/(2*moi);
-	public double solveChassisDynamics(double rPath, double vel, double acc, boolean left) { // this should return a two quantity object (drivebaseState) or something like that, but again, for now... no
+	
+	public double solveChassisDynamics(double rPath, double vel, double acc, boolean left) { // this should return a two quantity object (drivebaseState) or something like that, but again, for now... no 
 		if(left) {
+			System.out.println("Target left wheel velocity: " + vel*(k1*rPath-1)/(k1*rPath) + " Target left wheel force: " + (mass*acc*(k2*rPath - 1))/(2*k2*rPath));
+			return voltsForMotion(
+				vel*(k1*rPath-1)/(k1*rPath),
+				(mass*acc*(k2*rPath - 1))/(2*k2*rPath));
+		}else{
+			System.out.println("Target right wheel velocity: " + vel*(k1*rPath+1)/(k1*rPath) + " Target right wheel force: " + (mass*acc*(k2*rPath + 1))/(2*k2*rPath));
+			return voltsForMotion(
+				vel*(k1*rPath+1)/(k1*rPath),
+				(mass*acc*(k2*rPath + 1))/(2*k2*rPath));
+		}
+	}
+	double k3 = wheelBaseWidth*mass/2;
+	double Ts = 20.0; // Tune me!
+	public double solveScrubbyChassisDynamics( double rPath, double vel, double acc, double angVel, boolean left ){
+		if(left) {
+			
 			return voltsForMotion(
 					vel*(k1*rPath-1)/(k1*rPath),
-					(mass*acc*(k2*rPath - 1))/(2*k2*rPath));
-		}else{
+					((k3-moi/rPath)*mass*acc-angVel*Ts*mass)/(2*k3));
+					//(mass*acc*(k2*rPath - 1))/(2*k2*rPath));
+		}else {
 			return voltsForMotion(
 					vel*(k1*rPath+1)/(k1*rPath),
-					(mass*acc*(k2*rPath + 1))/(2*k2*rPath));
+					((k3+moi/rPath)*mass*acc+angVel*Ts*mass)/(2*k3));
+					//(mass*acc*(k2*rPath + 1))/(2*k2*rPath));
 		}
 	}
 	
