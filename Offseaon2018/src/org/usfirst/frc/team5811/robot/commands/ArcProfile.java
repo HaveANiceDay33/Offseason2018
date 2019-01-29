@@ -30,7 +30,7 @@ public class ArcProfile extends Command {
     protected void initialize() {
 //    	In real life, profile generation should run earlier and trajectory data should be stored somewhere else
 //    	I am just putting it here for easier testing
-    	double pathRadius = -1.0; //6.1516;//0.4064; // m
+    	double pathRadius = -1.5; //6.1516;//0.4064; // m
     	double radialDistance = Math.PI*2; // m   //Target distance to travel
     	double velMax = 2.0; 	// m/s
     	double accMax = 2.0; // m/s^2
@@ -76,14 +76,14 @@ public class ArcProfile extends Command {
     	}
     	System.out.println("Max velocity reached");
     	
-//    	while(time<2.0) {
-//    		voltagesLeft.add(Robot.driveSUB.solveChassisDynamics(pathRadius, vel, 0, true));
-//    		voltagesRight.add(Robot.driveSUB.solveChassisDynamics(pathRadius, vel, 0, false));
-//    		System.out.println(time + " " + vel + " " + angVel + " " + acc + " " + angAcc + " " + voltagesLeft.get(index) + " " + voltagesRight.get(index));
-//    		
-//    		index++;
-//    		time += dt;
-//    	}
+    	while(time<2.5) {
+    		voltagesLeft.add(Robot.driveSUB.solveScrubbyChassisDynamics(pathRadius, vel, 0, angVel, true));
+    		voltagesRight.add(Robot.driveSUB.solveScrubbyChassisDynamics(pathRadius, vel, 0, angVel, false));
+    		System.out.println(time + " " + vel + " " + angVel + " " + acc + " " + angAcc + " " + voltagesLeft.get(index) + " " + voltagesRight.get(index));
+    		
+    		index++;
+    		time += dt;
+    	}
     	
     	
     	
@@ -96,7 +96,7 @@ public class ArcProfile extends Command {
     boolean done = false;
     protected void execute() {
     	if(i<index) {
-    		//Robot.driveSUB.voltageDrive(voltagesLeft.get(i), voltagesRight.get(i));
+    		Robot.driveSUB.voltageDrive(voltagesLeft.get(i), voltagesRight.get(i));
     		i++;
     	}else {
     		Robot.driveSUB.fullStop();

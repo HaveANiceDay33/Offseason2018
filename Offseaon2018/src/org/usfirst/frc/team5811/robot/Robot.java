@@ -25,6 +25,7 @@ import org.usfirst.frc.team5811.robot.commands.OutsideSwitchLeftAuto;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchLeftAutoExtended;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchRightAuto;
 import org.usfirst.frc.team5811.robot.commands.OutsideSwitchrightAutoExtended;
+import org.usfirst.frc.team5811.robot.commands.ProfileDrive;
 import org.usfirst.frc.team5811.robot.commands.RunBasicTrapezoidalProfile;
 import org.usfirst.frc.team5811.robot.commands.runProfile;
 import org.usfirst.frc.team5811.robot.commands.DrivetrainExperiment;
@@ -402,7 +403,7 @@ public class Robot extends IterativeRobot {
 		   //autonomousCommand = new RunBasicTrapezoidalProfile(); // Motion Profiles! Wooo! //Lot of work to do on code structure
 		   //autonomousCommand = new LocalizationTest(); 
 		   //autonomousCommand = new LocalizationTest();
-		   autonomousCommand = new ArcProfile();
+		   autonomousCommand = new ProfileDrive();
 //		   System.out.println("command selected");
 		   autonomousCommand.start();
 //		   System.out.println("command started");

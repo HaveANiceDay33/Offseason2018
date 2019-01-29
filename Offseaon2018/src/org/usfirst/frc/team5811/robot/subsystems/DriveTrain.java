@@ -422,7 +422,7 @@ public class DriveTrain extends Subsystem {
 	
 //	Physical robot properties should be stored in a constants file in real life, and potentially calibrated by experiment, using this for now
 	double mass = 40.0; // kg
-	double moi = 10.0; // kg * m^2   //this is a number 254 code had, I figure it's close-ish. Definitely need tuning. Trying to account for scrub with this, not so great
+	double moi = 20.0; // kg * m^2   //this is a number 254 code had, I figure it's close-ish. Definitely need tuning. Trying to account for scrub with this, not so great
 	double wheelRadiusMeters = 0.0762; // m 
 	double wheelBaseWidth = 0.8128; // m   //this is the effective wheel base width empirically 4/3 that of the physical wheel base width (24in --> 32in)
 	double vIntercept = 0.67; //0.67 // V
@@ -455,15 +455,16 @@ public class DriveTrain extends Subsystem {
 		}
 	}
 	double k3 = wheelBaseWidth*mass/2;
-	double Ts = 20.0; // Tune me!
+	double Ts = 60.0; // Tune me!
 	public double solveScrubbyChassisDynamics( double rPath, double vel, double acc, double angVel, boolean left ){
 		if(left) {
-			
+			System.out.println("Vel Left: " + vel*(k1*rPath-1)/(k1*rPath) + " Force Left: " + ((k3-moi/rPath)*mass*acc-angVel*Ts*mass)/(2*k3));
 			return voltsForMotion(
 					vel*(k1*rPath-1)/(k1*rPath),
 					((k3-moi/rPath)*mass*acc-angVel*Ts*mass)/(2*k3));
 					//(mass*acc*(k2*rPath - 1))/(2*k2*rPath));
 		}else {
+			System.out.println("Vel Right: " + vel*(k1*rPath+1)/(k1*rPath) + " Force Right: " + ((k3+moi/rPath)*mass*acc+angVel*Ts*mass)/(2*k3));
 			return voltsForMotion(
 					vel*(k1*rPath+1)/(k1*rPath),
 					((k3+moi/rPath)*mass*acc+angVel*Ts*mass)/(2*k3));
